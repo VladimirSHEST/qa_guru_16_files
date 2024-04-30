@@ -1,7 +1,6 @@
 package ru.vladimir;
 
 import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.conditions.Text;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -10,12 +9,11 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import static com.codeborne.selenide.Condition.attribute;
-import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class selenideFilesTest2 {
+public class SelenideFilesTest2 {
     @Test
     void selenideDownloadTest() throws Exception {
         open("https://github.com/junit-team/junit5/blob/main/README.md");
@@ -49,7 +47,7 @@ public class selenideFilesTest2 {
         $("div.qq-file-name").shouldHave(Condition.text("nature.jpg"));
         // пример проверки
        // $("span.qq-upload-file-selector").shouldHave(attribute("title","nature.jpg"));
-
+           System.out.println("");
 
     }
 }
