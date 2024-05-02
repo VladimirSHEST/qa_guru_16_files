@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class Glossary {
     public  String title;  // 1 ключ
-    @SerializedName("GlossDiv")  // аннотация означает, что переменнная на самом делеле с заглавной буквы
+    @SerializedName("GlossDiv")  // аннотация означает, что переменная на самом деле с заглавной буквы
     public GlossDiv glossDiv;
 
     public static class GlossDiv { // 1 вложенный объект

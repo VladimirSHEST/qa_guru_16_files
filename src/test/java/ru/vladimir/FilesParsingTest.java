@@ -9,6 +9,7 @@ import com.opencsv.CSVReader;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.io.Zip;
+import ru.vladimir.model.Glossary;
 
 import java.io.FileInputStream;
 import java.util.List;
@@ -21,8 +22,10 @@ import java.util.zip.ZipInputStream;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 import static org.assertj.core.api.Assertions.assertThat;
+
 public class FilesParsingTest {
-    ClassLoader cl =  FilesParsingTest.class.getClassLoader();
+    ClassLoader cl = FilesParsingTest.class.getClassLoader();
+
     @Test
     void pdfParseTest() throws Exception {
         open("https://junit.org/junit5/docs/current/user-guide/");
@@ -30,7 +33,8 @@ public class FilesParsingTest {
         PDF content = new PDF(downloadedPdf);// класс PDF уже содержит внутри класс InputStream
         assertThat(content.author).contains("Sam Brannen");
     }
-//    @Test
+
+    //    @Test
 //    void xlsParseTest() throws Exception {
 //        open("https://hthwater.ru/spisokgorodovrossii");
 //        File downloadedXml = $("//*[@id='content']/a[2]").download();
@@ -45,27 +49,29 @@ public class FilesParsingTest {
             assertThat(content.excel.getSheetAt(0).getRow(1).getCell(1).getStringCellValue()).contains("1120");
         }
     }
+
     @DisplayName("работа с CSV файлом")
     @Test
     void csvParseTest() throws Exception {
         try (
                 InputStream res = cl.getResourceAsStream("example/exam.csv");
                 CSVReader read = new CSVReader(new InputStreamReader(res))
-        ){
+        ) {
             List<String[]> con = read.readAll(); // в стринговый массив списка вложили наш вайл,
             // там будет 3 массива так как 3 строки
-            assertThat(con.get(0)[1]).contains("My"); // тут проверка. 1 строка и в нкй  2 ячейка - слово "My"
+            assertThat(con.get(0)[1]).contains("My"); // тут проверка. 1 строка и в нкй 2 ячейка - слово "My"
         }
     }
+
     @DisplayName("позволяет узнать имя файла внутри зип zip архива")
     @Test
     void zipParseTest() throws Exception {
         try (
                 InputStream resource = cl.getResourceAsStream("example/1.txt.zip");
                 ZipInputStream zis = new ZipInputStream(resource)
-        ){
+        ) {
             ZipEntry entry;
-            while ((entry = zis.getNextEntry())!= null) {
+            while ((entry = zis.getNextEntry()) != null) {
                 assertThat(entry.getName()).contains("1.tx");
             }
         }
@@ -73,12 +79,12 @@ public class FilesParsingTest {
 
     @DisplayName("проверяем что внутри файла Json")
     @Test
-    void jsonParseTest() throws Exception{
+    void jsonParseTest() throws Exception {
         Gson gson = new Gson();
         try (
                 InputStream res = cl.getResourceAsStream("example/glossary.json");
                 InputStreamReader read = new InputStreamReader(res)
-        ){
+        ) {
             JsonObject jsonObject = gson.fromJson(read, JsonObject.class);// парсим gson в JsonObject
             // далее проверка, вводим ключ и значения, учитывая их тип, 1 пример тип Стринг
             assertThat(jsonObject.get("title").getAsString()).isEqualTo("example glossary");
@@ -89,8 +95,20 @@ public class FilesParsingTest {
             assertThat(jsonObject.get("GlossDiv").getAsJsonObject().get("flag").getAsBoolean())
                     .isTrue();
         }
-
-
     }
 
+    @DisplayName("2-ой способ работы с Json, проверяем что внутри файла Json")
+    @Test
+    void jsonParseImprovedTest() throws Exception {
+        Gson gson = new Gson();
+        try (
+                InputStream res = cl.getResourceAsStream("example/glossary.json");
+                InputStreamReader read = new InputStreamReader(res)
+        ) {
+            Glossary jsonObject = gson.fromJson(read, Glossary.class);
+            assertThat(jsonObject.title).isEqualTo("example glossary");
+            assertThat(jsonObject.glossDiv.title).isEqualTo("S");
+            assertThat(jsonObject.glossDiv.flag).isTrue();
+        }
+    }
 }
